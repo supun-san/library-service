@@ -8,16 +8,19 @@ import com.san.libraryservice.repository.BookRepository;
 import com.san.libraryservice.service.BookService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.san.libraryservice.constant.LogConstants.*;
 import static com.san.libraryservice.constant.MessageConstants.BOOK_NOT_FOUND_MESSAGE;
 import static com.san.libraryservice.constant.MessageConstants.ISBN_CONFLICT_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
@@ -32,14 +35,17 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponse addBook(BookRequest bookRequest) {
+        log.info(ADD_BOOK_SERVICE_START, bookRequest.getIsbn());
 
         bookRepository.findFirstByIsbn(bookRequest.getIsbn())
                 .filter(book -> !(book.getTitle().equals(bookRequest.getTitle())
                         && book.getAuthor().equals(bookRequest.getAuthor())))
                 .ifPresent(book -> {
+                    log.warn(ADD_BOOK_ISBN_CONFLICT, bookRequest.getIsbn());
                     throw new IllegalArgumentException(ISBN_CONFLICT_MESSAGE);
                 });
 
+        log.info(ADD_BOOK_SERVICE_SUCCESS, bookRequest.getIsbn());
         return mapToBookResponse(bookRepository.save(mapToBook(bookRequest)));
     }
 
@@ -54,9 +60,16 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookResponse> getAllBooks() {
 
+        log.info(GET_ALL_BOOKS_SERVICE_START);
+
         List<Book> books = Optional.of(bookRepository.findAll())
                 .filter(book -> !book.isEmpty())
-                .orElseThrow(() -> new RecordNotFoundException(BOOK_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> {
+                    log.warn(GET_ALL_BOOKS_EMPTY);
+                    return new RecordNotFoundException(BOOK_NOT_FOUND_MESSAGE);
+                });
+
+        log.info(GET_ALL_BOOKS_SERVICE_SUCCESS, books.size());
 
         return books.stream()
                 .map(this::mapToBookResponse)

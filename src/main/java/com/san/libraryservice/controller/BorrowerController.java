@@ -6,15 +6,18 @@ import com.san.libraryservice.service.BorrowerService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.san.libraryservice.constant.LogConstants.*;
 import static com.san.libraryservice.constant.MessageConstants.BOOK_BORROWED_SUCCESS;
 import static com.san.libraryservice.constant.MessageConstants.BOOK_RETUNED_SUCCESS;
 
 @RestController
 @RequestMapping("/api/v1/borrowers")
 @RequiredArgsConstructor
+@Slf4j
 public class BorrowerController {
 
     private final BorrowerService borrowerService;
@@ -32,6 +35,7 @@ public class BorrowerController {
     )
     @PostMapping("/register")
     public ResponseEntity<BorrowerResponse> registerBorrower(@Valid @RequestBody BorrowerRequest borrowerRequest) {
+        log.info(REGISTER_BORROWER_CONTROLLER_START, borrowerRequest.getEmail());
         return ResponseEntity.ok(borrowerService.register(borrowerRequest));
     }
 
@@ -49,6 +53,7 @@ public class BorrowerController {
     )
     @PostMapping("/{borrowerId}/borrow/{bookId}")
     public ResponseEntity<String> borrowBook(@PathVariable Long borrowerId, @PathVariable Long bookId) {
+        log.info(BORROW_BOOK_CONTROLLER_START, borrowerId, bookId);
         borrowerService.borrowBook(borrowerId, bookId);
         return ResponseEntity.ok(BOOK_BORROWED_SUCCESS);
     }
@@ -67,6 +72,7 @@ public class BorrowerController {
     )
     @PostMapping("/{borrowerId}/return/{bookId}")
     public ResponseEntity<String> returnBook(@PathVariable Long borrowerId, @PathVariable Long bookId) {
+        log.info(RETURN_BOOK_CONTROLLER_START, borrowerId, bookId);
         borrowerService.returnBook(borrowerId, bookId);
         return ResponseEntity.ok(BOOK_RETUNED_SUCCESS);
     }
