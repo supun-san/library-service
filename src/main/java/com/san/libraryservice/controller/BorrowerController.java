@@ -30,7 +30,7 @@ public class BorrowerController {
             summary = "Register a new borrower",
             description = "Creates and saves a new borrower using the provided name and email."
     )
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<BorrowerResponse> registerBorrower(@Valid @RequestBody BorrowerRequest borrowerRequest) {
         return ResponseEntity.ok(borrowerService.register(borrowerRequest));
     }
