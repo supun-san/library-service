@@ -6,11 +6,15 @@ import com.san.libraryservice.exception.RecordNotFoundException;
 import com.san.libraryservice.model.Book;
 import com.san.libraryservice.repository.BookRepository;
 import com.san.libraryservice.service.BookService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.san.libraryservice.constant.MessageConstants.BOOK_NOT_FOUND_MESSAGE;
+import static com.san.libraryservice.constant.MessageConstants.ISBN_CONFLICT_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +26,20 @@ public class BookServiceImpl implements BookService {
      * Adds a new book to the repository and returns its response DTO.
      *
      * @param bookRequest the DTO containing details of the book to add
-     * @return {@link BookResponse} he BookResponse of the saved book
+     * @return {@link BookResponse} the BookResponse of the saved book
      * @author Supunsan
      */
     @Override
+    @Transactional
     public BookResponse addBook(BookRequest bookRequest) {
+
+        bookRepository.findFirstByIsbn(bookRequest.getIsbn())
+                .filter(book -> !(book.getTitle().equals(bookRequest.getTitle())
+                        && book.getAuthor().equals(bookRequest.getAuthor())))
+                .ifPresent(book -> {
+                    throw new IllegalArgumentException(ISBN_CONFLICT_MESSAGE);
+                });
+
         return mapToBookResponse(bookRepository.save(mapToBook(bookRequest)));
     }
 
@@ -43,11 +56,35 @@ public class BookServiceImpl implements BookService {
 
         List<Book> books = Optional.of(bookRepository.findAll())
                 .filter(book -> !book.isEmpty())
-                .orElseThrow(() -> new RecordNotFoundException("Not found any books"));
+                .orElseThrow(() -> new RecordNotFoundException(BOOK_NOT_FOUND_MESSAGE));
 
         return books.stream()
                 .map(this::mapToBookResponse)
                 .toList();
+    }
+
+    /**
+     * Retrieves a book by its unique identifier.
+     *
+     * @param bookId the ID of the book to retrieve
+     * @return the {@link Book} object with the specified ID
+     * @throws RecordNotFoundException if no book is found with the given ID
+     * @author Supunsan
+     */
+    @Override
+    public Book getBookById(Long bookId) {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new RecordNotFoundException("Book not found with ID: " + bookId));
+    }
+
+    /**
+     * Updates the details of an existing book.
+     *
+     * @param book the {@link Book} object containing updated information
+     */
+    @Override
+    public void updateBook(Book book) {
+        bookRepository.save(book);
     }
 
     /**
@@ -62,6 +99,7 @@ public class BookServiceImpl implements BookService {
                 .isbn(request.getIsbn())
                 .title(request.getTitle())
                 .author(request.getAuthor())
+                .available(true)
                 .build();
     }
 
@@ -78,7 +116,7 @@ public class BookServiceImpl implements BookService {
                 .isbn(book.getIsbn())
                 .title(book.getTitle())
                 .author(book.getAuthor())
-                .borrowed(book.isBorrowed())
+                .borrowed(book.isAvailable())
                 .build();
     }
 }

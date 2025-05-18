@@ -22,26 +22,24 @@ public class BookController {
      * Registers a new book in the library.
      *
      * @param bookRequest the incoming request body containing book details, validated with @Valid
-     * @return ResponseEntity containing the saved BookResponse DTO with HTTP 200 OK status
+     * @return {@link ResponseEntity} containing the saved BookResponse DTO with HTTP 200 OK status
      * @author Supunsan
      */
     @Operation(summary = "Register a new book", description = "Adds a new book to the library")
     @PostMapping("/register")
     public ResponseEntity<BookResponse> addBook(@Valid @RequestBody BookRequest bookRequest) {
-        BookResponse savedBook = bookService.addBook(bookRequest);
-        return ResponseEntity.ok(savedBook);
+        return ResponseEntity.ok(bookService.addBook(bookRequest));
     }
 
     /**
      * Retrieves all books currently stored in the library.
      *
-     * @return ResponseEntity containing a list of BookResponse DTOs with HTTP 200 OK status
+     * @return {@link ResponseEntity} containing a list of BookResponse DTOs with HTTP 200 OK status
      * @author Supunsan
      */
     @Operation(summary = "Get all books", description = "Retrieve a list of all books in the library")
     @GetMapping("/all")
     public ResponseEntity<List<BookResponse>> getAllBooks() {
-        List<BookResponse> books = bookService.getAllBooks();
-        return ResponseEntity.ok(books);
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 }
