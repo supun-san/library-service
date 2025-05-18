@@ -22,7 +22,7 @@ public class BookServiceImpl implements BookService {
      * Adds a new book to the repository and returns its response DTO.
      *
      * @param bookRequest the DTO containing details of the book to add
-     * @return {@link BookResponse} he BookResponse of the saved book
+     * @return {@link BookResponse} the BookResponse of the saved book
      * @author Supunsan
      */
     @Override
