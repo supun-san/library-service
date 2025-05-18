@@ -3,6 +3,7 @@ package com.san.libraryservice.service;
 import com.san.libraryservice.dto.BookRequest;
 import com.san.libraryservice.dto.BookResponse;
 import com.san.libraryservice.exception.RecordNotFoundException;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface BookService {
      * @return {@link BookResponse} he BookResponse of the saved book
      * @author Supunsan
      */
-    BookResponse addBook(BookRequest bookRequest);
+    BookResponse addBook(@Valid BookRequest bookRequest);
 
     /**
      * Retrieves all books from the repository.
