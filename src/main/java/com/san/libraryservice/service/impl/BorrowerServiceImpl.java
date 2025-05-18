@@ -90,6 +90,38 @@ public class BorrowerServiceImpl implements BorrowerService {
                 .orElseThrow(() -> new RecordNotFoundException("Borrower not found with ID: " + borrowerId));
     }
 
+    /**
+     * Processes the return of a borrowed book by a borrower.
+     * <p>
+     * Steps performed by this method:
+     * <br>1. Validates that the borrower and book exist.
+     * <br>2. Retrieves the active borrow record (not yet returned).
+     * <br>3. Marks the borrow record as returned by setting the return timestamp.
+     * <br>4. Updates the borrow record and marks the book as available again.
+     * This method is transactional to ensure atomicity of all related updates.
+     *
+     * @param borrowerId the ID of the borrower returning the book
+     * @param bookId     the ID of the book being returned
+     * @throws RecordNotFoundException if borrower or book does not exist
+     * @throws IllegalStateException   if there is no active borrow record for the given borrower and book
+     * @author Supunsan
+     */
+    @Override
+    @Transactional
+    public void returnBook(Long borrowerId, Long bookId) {
+
+        getBorrowerById(borrowerId);
+        Book book = bookService.getBookById(bookId);
+
+        BorrowRecord borrowRecord = borrowRecordService.getActiveBorrowRecord(borrowerId, bookId);
+        borrowRecord.setReturnedAt(LocalDateTime.now());
+
+        borrowRecordService.updateBorrowRecord(borrowRecord);
+
+        book.setAvailable(true);
+        bookService.updateBook(book);
+    }
+
 
     /**
      * Maps a {@link BorrowerRequest} DTO to a {@link Borrower} entity.
