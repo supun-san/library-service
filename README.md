@@ -130,6 +130,24 @@ docker-compose up --build
 
 ---
 
+## 📘 API Documentation with Swagger UI
+
+This project includes **Swagger UI** for interactive API documentation.
+
+### How to Access Swagger UI
+
+Once the application is running (locally or via Docker), open your web browser and go to:
+
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+This page provides a user-friendly interface to:
+
+- View all available API endpoints  
+- See request and response formats, including data models   
+- Read endpoint descriptions and details
+
+---
+
 ## 📝 Assumptions
 
 * ISBN uniquely identifies book type (not copy)
