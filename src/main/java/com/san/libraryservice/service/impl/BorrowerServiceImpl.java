@@ -12,12 +12,16 @@ import com.san.libraryservice.service.BorrowRecordService;
 import com.san.libraryservice.service.BorrowerService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static com.san.libraryservice.constant.LogConstants.*;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BorrowerServiceImpl implements BorrowerService {
 
     private final BorrowerRepository borrowerRepository;
@@ -33,7 +37,12 @@ public class BorrowerServiceImpl implements BorrowerService {
      */
     @Override
     public BorrowerResponse register(BorrowerRequest borrowerRequest) {
-        return mapToBorrowerResponse(borrowerRepository.save(mapToBorrower(borrowerRequest)));
+
+        log.info(REGISTER_BORROWER_SERVICE_START, borrowerRequest.getEmail());
+        Borrower savedBorrower = borrowerRepository.save(mapToBorrower(borrowerRequest));
+        log.info(REGISTER_BORROWER_SUCCESS, savedBorrower.getId());
+
+        return mapToBorrowerResponse(savedBorrower);
     }
 
     /**
@@ -59,9 +68,11 @@ public class BorrowerServiceImpl implements BorrowerService {
     @Transactional
     public void borrowBook(Long borrowerId, Long bookId) {
 
+        log.info(BORROW_BOOK_SERVICE_START, borrowerId, bookId);
         Borrower borrower = getBorrowerById(borrowerId);
         Book book = bookService.getBookById(bookId);
 
+        log.info(BORROW_BOOK_VALIDATION, bookId);
         borrowRecordService.validateBookAvailability(bookId);
 
         BorrowRecord borrowRecord = BorrowRecord.builder()
@@ -71,9 +82,11 @@ public class BorrowerServiceImpl implements BorrowerService {
                 .build();
 
         borrowRecordService.saveBorrowRecord(borrowRecord);
+        log.info(BORROW_RECORD_SAVED, borrowerId, bookId);
 
         book.setAvailable(false);
         bookService.updateBook(book);
+        log.info(BORROW_BOOK_SUCCESS, borrowerId, bookId);
     }
 
     /**
@@ -110,16 +123,21 @@ public class BorrowerServiceImpl implements BorrowerService {
     @Transactional
     public void returnBook(Long borrowerId, Long bookId) {
 
+        log.info(RETURN_BOOK_SERVICE_START, borrowerId, bookId);
+
         getBorrowerById(borrowerId);
         Book book = bookService.getBookById(bookId);
 
         BorrowRecord borrowRecord = borrowRecordService.getActiveBorrowRecord(borrowerId, bookId);
+        log.info(RETURN_BOOK_RECORD_FOUND, borrowerId, bookId);
         borrowRecord.setReturnedAt(LocalDateTime.now());
 
         borrowRecordService.updateBorrowRecord(borrowRecord);
+        log.info(RETURN_BOOK_RECORD_UPDATED, borrowerId, bookId);
 
         book.setAvailable(true);
         bookService.updateBook(book);
+        log.info(RETURN_BOOK_SUCCESS, bookId, borrowerId);
     }
 
 
