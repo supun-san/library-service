@@ -3,6 +3,7 @@ package com.san.libraryservice.service;
 import com.san.libraryservice.dto.BookRequest;
 import com.san.libraryservice.dto.BookResponse;
 import com.san.libraryservice.exception.RecordNotFoundException;
+import com.san.libraryservice.model.Book;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -27,4 +28,21 @@ public interface BookService {
      * @author Supunsan
      */
     List<BookResponse> getAllBooks();
+
+    /**
+     * Retrieves a book by its unique identifier.
+     *
+     * @param bookId the ID of the book to retrieve
+     * @return the {@link Book} object with the specified ID
+     * @throws RecordNotFoundException if no book is found with the given ID
+     * @author Supunsan
+     */
+    Book getBookById(Long bookId);
+
+    /**
+     * Updates the details of an existing book.
+     *
+     * @param book the {@link Book} object containing updated information
+     */
+    void updateBook(Book book);
 }

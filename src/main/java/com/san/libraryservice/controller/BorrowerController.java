@@ -7,10 +7,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.san.libraryservice.constant.MessageConstants.BOOK_BORROWED_SUCCESS;
 
 @RestController
 @RequestMapping("/api/v1/borrowers")
@@ -33,5 +32,22 @@ public class BorrowerController {
     @PostMapping("/register")
     public ResponseEntity<BorrowerResponse> registerBorrower(@Valid @RequestBody BorrowerRequest borrowerRequest) {
         return ResponseEntity.ok(borrowerService.register(borrowerRequest));
+    }
+
+    /**
+     * Handles a borrow request where a borrower borrows a book.
+     *
+     * @param borrowerId the ID of the borrower who wants to borrow the book
+     * @param bookId     the ID of the book to be borrowed
+     * @return a {@link ResponseEntity} containing a success message upon successful borrowing
+     */
+    @Operation(
+            summary = "Borrow a book",
+            description = "Allows a borrower to borrow a book by specifying borrower ID and book ID."
+    )
+    @PostMapping("/{borrowerId}/borrow/{bookId}")
+    public ResponseEntity<String> borrowBook(@PathVariable Long borrowerId, @PathVariable Long bookId) {
+        borrowerService.borrowBook(borrowerId, bookId);
+        return ResponseEntity.ok(BOOK_BORROWED_SUCCESS);
     }
 }
