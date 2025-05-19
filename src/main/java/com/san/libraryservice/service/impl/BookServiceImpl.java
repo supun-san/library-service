@@ -94,6 +94,7 @@ public class BookServiceImpl implements BookService {
      * Updates the details of an existing book.
      *
      * @param book the {@link Book} object containing updated information
+     * @author Supunsan
      */
     @Override
     public void updateBook(Book book) {
