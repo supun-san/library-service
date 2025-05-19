@@ -43,6 +43,7 @@ public interface BookService {
      * Updates the details of an existing book.
      *
      * @param book the {@link Book} object containing updated information
+     * @author Supunsan
      */
     void updateBook(Book book);
 }
