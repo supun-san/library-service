@@ -6,6 +6,7 @@ import com.san.libraryservice.service.BorrowRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.san.libraryservice.constant.MessageConstants.BOOK_ALREADY_BORROWED;
 import static com.san.libraryservice.constant.MessageConstants.BORROW_RECORD_NOT_FOUND;
 
 @Service
@@ -27,7 +28,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     public void validateBookAvailability(Long bookId) {
         boolean isAlreadyBorrowed = borrowRecordRepository.existsByBookIdAndReturnedAtIsNull(bookId);
         if (isAlreadyBorrowed) {
-            throw new IllegalStateException("Book with ID " + bookId + " is already borrowed.");
+            throw new IllegalStateException(String.format(BOOK_ALREADY_BORROWED, bookId));
         }
     }
 

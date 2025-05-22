@@ -21,6 +21,7 @@ import static com.san.libraryservice.constant.LogConstants.RETURN_BOOK_RECORD_FO
 import static com.san.libraryservice.constant.LogConstants.RETURN_BOOK_RECORD_UPDATED;
 import static com.san.libraryservice.constant.LogConstants.RETURN_BOOK_SERVICE_START;
 import static com.san.libraryservice.constant.LogConstants.RETURN_BOOK_SUCCESS;
+import static com.san.libraryservice.constant.MessageConstants.BORROWER_NOT_FOUND_BY_ID;
 
 @Service
 @AllArgsConstructor
@@ -86,7 +87,7 @@ public class LibraryServiceImpl implements LibraryService {
     @Override
     public Borrower getBorrowerById(Long borrowerId) {
         return borrowerRepository.findById(borrowerId)
-                .orElseThrow(() -> new RecordNotFoundException("Borrower not found with ID: " + borrowerId));
+                .orElseThrow(() -> new RecordNotFoundException(BORROWER_NOT_FOUND_BY_ID + borrowerId));
     }
 
     /**

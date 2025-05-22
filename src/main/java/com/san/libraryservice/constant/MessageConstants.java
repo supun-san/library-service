@@ -10,4 +10,7 @@ public class MessageConstants {
     public static final String BOOK_BORROWED_SUCCESS = "Book borrowed successfully";
     public static final String BOOK_RETUNED_SUCCESS = "Book returned successfully";
     public static final String BORROW_RECORD_NOT_FOUND = "No active borrow record found for borrower ID %d and book ID %d";
+    public static final String BORROWER_NOT_FOUND_BY_ID = "Borrower not found with ID: ";
+    public static final String BOOK_ALREADY_BORROWED = "Book with ID %s is already borrowed.";
+
 }

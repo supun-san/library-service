@@ -2,6 +2,7 @@ package com.san.libraryservice.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static com.san.libraryservice.constant.CommonConstants.EMPTY_STRING;
 import static com.san.libraryservice.constant.ExceptionConstants.*;
 
 @RestControllerAdvice
@@ -72,6 +76,9 @@ public class GlobalExceptionHandler {
         } else if (ex instanceof ConstraintViolationException e) {
             message = VALIDATION_FAILED_MSG;
             details = extractViolationDetails(e);
+        } else if (ex instanceof DataIntegrityViolationException e) {
+            message = extractColumnName(e.getMessage()) + ALREADY_EXISTS;
+            details = List.of(ex.getClass().getSimpleName());
         } else {
             message = ex.getMessage();
             details = List.of(ex.getClass().getSimpleName());
@@ -105,5 +112,23 @@ public class GlobalExceptionHandler {
         return ex.getConstraintViolations().stream()
                 .map(v -> FIELD_ERROR_FORMAT.formatted(v.getPropertyPath(), v.getMessage()))
                 .toList();
+    }
+
+    /**
+     * Extracts the column name from a database unique constraint violation message.
+     *
+     * @param message The exception message from which to extract the column name.
+     * @return The column name with the first letter capitalized
+     * @author Supunsan
+     */
+    private String extractColumnName(String message) {
+        Pattern pattern = Pattern.compile(UNIQUE_CONSTRAINT_COLUMN_REGEX);
+        Matcher matcher = pattern.matcher(message);
+        if (matcher.find()) {
+            String field = matcher.group(1).replace(LEFT_PARENTHESIS, EMPTY_STRING)
+                    .replace(RIGHT_PARENTHESIS, EMPTY_STRING);
+            return field.substring(0, 1).toUpperCase() + field.substring(1);
+        }
+        return null;
     }
 }
