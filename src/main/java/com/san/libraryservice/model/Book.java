@@ -1,16 +1,21 @@
 package com.san.libraryservice.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Book extends BaseEntity {
+public class Book {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String isbn;
     private String title;
     private String author;
