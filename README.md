@@ -148,6 +148,32 @@ This page provides a user-friendly interface to:
 
 ---
 
+## 🧪 Unit Testing
+
+This project contains comprehensive unit tests focused on the service layer to verify core business logic.
+
+### Testing Frameworks and Tools
+
+- **JUnit 5** for writing and running unit tests  
+- **Mockito** for mocking dependencies and isolating units under test  
+- **Spring Boot Test** support for context loading when necessary  
+
+### What is Tested
+
+- Successful borrowing and returning of books  
+- Proper exception handling when borrower or book is missing  
+- Validation that books are available before borrowing  
+
+### Running Tests
+
+Run all tests with Maven:
+
+```bash
+mvn test
+```
+
+---
+
 ## 📝 Assumptions
 
 * ISBN uniquely identifies book type (not copy)
